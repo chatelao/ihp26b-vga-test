@@ -7,7 +7,7 @@
 
 module tt_um_chatelao_blink (
   input  wire [7:0] ui_in,    // Dedicated inputs
-  output wire [7:0] uo_out,   // Dedicated outputs, 7 segments display
+  output wire [7:0] uo_out,   // Dedicated outputs
   input  wire [7:0] uio_in,   // IOs: Input path
   output wire [7:0] uio_out,  // IOs: Output path
   output wire [7:0] uio_oe,   // IOs: Enable path (active high: 0=input, 1=output)
@@ -17,25 +17,34 @@ module tt_um_chatelao_blink (
 );
 
   // VGA signals
-  wire a;
-  wire b;
-  wire c;
-  wire d;
-  wire e;
-  wire f;
-  wire g;
-  wire h;
-  wire dot;
+  wire hsync;
+  wire vsync;
+  wire video_active;
+  wire [9:0] pix_x;
+  wire [9:0] pix_y;
 
-  // TinyVGA PMOD
-  assign uo_out = {a, b, c, d, e, f, g, dot};
+  wire [1:0] R;
+  wire [1:0] G;
+  wire [1:0] B;
+
+  // Output mappings according to info.yaml / PMOD VGA
+  wire a = R[1];    // uo[0]
+  wire b = G[1];    // uo[1]
+  wire c = B[1];    // uo[2]
+  wire d = vsync;   // uo[3]
+  wire e = R[0];    // uo[4]
+  wire f = G[0];    // uo[5]
+  wire g = B[0];    // uo[6]
+
+  // Dedicated outputs
+  assign uo_out = {hsync, g, f, e, d, c, b, a};
 
   // Unused outputs assigned to 0.
   assign uio_out = 0;
   assign uio_oe  = 0;
 
   // Suppress unused signals warning
-  wire _unused_ok = &{ena, ui_in, uio_in};
+  wire _unused_ok = &{ena, ui_in[7:4], uio_in, 1'b0};
 
   reg [9:0] counter;
 
@@ -51,8 +60,8 @@ module tt_um_chatelao_blink (
   
   wire [9:0] moving_x = pix_x - counter * 2;
 
-  assign R = video_active ? {moving_x[5], pix_y[ui_in]} : 2'b00;
-  assign G = video_active ? {moving_x[6], pix_y[counter[4]]} : 2'b00;
+  assign R = video_active ? {moving_x[5], pix_y[ui_in[3:0]]} : 2'b00;
+  assign G = video_active ? {moving_x[6], pix_y[{3'b000, counter[4]}]} : 2'b00;
   assign B = video_active ? {moving_x[7], pix_y[5]} : 2'b00;
   
   always @(posedge vsync, negedge rst_n) begin
