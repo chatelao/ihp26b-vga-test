@@ -5,9 +5,9 @@
 
 `default_nettype none
 
-module tt_um_mattvenn_vgatest(
+module tt_um_chatelao_blink (
   input  wire [7:0] ui_in,    // Dedicated inputs
-  output wire [7:0] uo_out,   // Dedicated outputs
+  output wire [7:0] uo_out,   // Dedicated outputs, 7 segments display
   input  wire [7:0] uio_in,   // IOs: Input path
   output wire [7:0] uio_out,  // IOs: Output path
   output wire [7:0] uio_oe,   // IOs: Enable path (active high: 0=input, 1=output)
@@ -17,18 +17,18 @@ module tt_um_mattvenn_vgatest(
 );
 
   // VGA signals
-  wire hsync;
-  wire vsync;
-  wire [1:0] R;
-  wire [1:0] G;
-  wire [1:0] B;
-  wire video_active;
-  wire [9:0] pix_x;
-  wire [9:0] pix_y;
-  wire sound;
+  wire a;
+  wire b;
+  wire c;
+  wire d;
+  wire e;
+  wire f;
+  wire g;
+  wire h;
+  wire dot;
 
   // TinyVGA PMOD
-  assign uo_out = {hsync, B[0], G[0], R[0], vsync, B[1], G[1], R[1]};
+  assign uo_out = {a, b, c, d, e, f, g, dot};
 
   // Unused outputs assigned to 0.
   assign uio_out = 0;
