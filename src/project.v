@@ -61,7 +61,7 @@ module tt_um_chatelao_blink (
   wire [9:0] moving_x = pix_x - counter * 2;
 
   assign R = video_active ? {moving_x[5], pix_y[ui_in[3:0]]} : 2'b00;
-  assign G = video_active ? {moving_x[6], pix_y[counter[4]]} : 2'b00;
+  assign G = video_active ? {moving_x[6], pix_y[{3'b000, counter[4]}]} : 2'b00;
   assign B = video_active ? {moving_x[7], pix_y[5]} : 2'b00;
   
   always @(posedge vsync, negedge rst_n) begin
